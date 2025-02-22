@@ -86,7 +86,7 @@ export default function Home() {
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
+            这是一个测试段落，看看文本是否能够自动平衡。如果不行，就需要手动调整样式来确保在不同屏幕尺寸下都能保持良好的阅读体验。希望这段话能够帮助你理解如何处理长段文字
           </p>
         </a>
       </div>
