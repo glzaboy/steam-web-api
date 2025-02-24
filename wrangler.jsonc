@@ -1,4 +1,5 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "steam-web-api",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-11-01",
