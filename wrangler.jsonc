@@ -20,8 +20,15 @@
   },
   "kv_namespaces": [
     {
-      "binding": "kv_namespaces",
-      "id": "234e2906-f23d-4ab9-8fae-184ebbe6e742"
+      "binding": "KEY_CACHE",
+      "id": "16f37bbaf5a143c08808008fd4b3df78"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "steamsda-api",
+      "database_id": "234e2906-f23d-4ab9-8fae-184ebbe6e742"
     }
   ]
 }
