@@ -1,3 +1,5 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 
 export async function GET() {
   const responseText = 'Hello World'
@@ -13,6 +15,8 @@ export async function GET() {
   // await myKv.put('suffix', ' from a KV store!')
   // const suffix = await myKv.get('suffix')
   // return new Response(responseText + suffix)
-
-  return new Response(responseText)
+  //getCloudflareContext().env.api;
+  const myKv = getCloudflareContext().env.api;
+  console.log(myKv);
+  return new Response(responseText + myKv)
 }

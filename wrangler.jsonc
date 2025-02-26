@@ -3,7 +3,9 @@
   "name": "steam-web-api",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-11-01",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "minify": true,
   "assets": {
     "directory": ".open-next/assets",
@@ -12,5 +14,14 @@
   "observability": {
     "enabled": true
   },
-  "upload_source_maps": true
+  "upload_source_maps": true,
+  "vars": {
+    "api": "name"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "kv_namespaces",
+      "id": "234e2906-f23d-4ab9-8fae-184ebbe6e742"
+    }
+  ]
 }
