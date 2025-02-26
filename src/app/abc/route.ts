@@ -16,7 +16,7 @@ export async function GET() {
   // const suffix = await myKv.get('suffix')
   // return new Response(responseText + suffix)
   //getCloudflareContext().env.api;
-  const myKv = getCloudflareContext().env.api;
+  const myKv = await getCloudflareContext({ async: true });
   console.log(myKv);
-  return new Response(responseText + myKv)
+  return new Response(responseText + myKv.env.api)
 }
