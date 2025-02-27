@@ -16,7 +16,8 @@
   },
   "upload_source_maps": true,
   "vars": {
-    "api": "name"
+    "api": "name",
+    "RESEND_API_KEY": "re_Sx1ZeQ8a_LcNAVqPkFBe1CULxZ75YtrYk",
   },
   "kv_namespaces": [
     {
