@@ -26,6 +26,7 @@ export async function sendMail(data: EmailData) {
             Authorization: `Bearer ${cloudflareCtx.env.RESEND_API_KEY}`,
         },
         body: JSON.stringify(data),
+        cache: "no-store"
     };
     const result = await fetch(`https://api.resend.com/emails`, opts)
     if (result.ok) {
