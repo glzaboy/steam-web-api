@@ -1,3 +1,6 @@
+
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 interface EmailData {
     from: string;
     to: string[];
@@ -14,12 +17,13 @@ interface EmailData {
  * @throws 当邮件发送失败时，抛出包含错误信息的Error对象
  */
 export async function sendMail(data: EmailData) {
+    const cloudflareCtx = await getCloudflareContext({ async: true });
     data.from = "steam@sda.steamsda.com";
     const opts = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            Authorization: `Bearer ${cloudflareCtx.env.RESEND_API_KEY}`,
         },
         body: JSON.stringify(data),
     };

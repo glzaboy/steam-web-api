@@ -3,5 +3,7 @@
 interface CloudflareEnv {
 	KEY_CACHE: KVNamespace;
 	api: "name";
+	RESEND_API_KEY: "re_Sx1ZeQ8a_LcNAVqPkFBe1CULxZ75YtrYk";
+	DB: D1Database;
 	ASSETS: Fetcher;
 }
