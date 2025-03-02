@@ -16,7 +16,7 @@
   },
   "upload_source_maps": true,
   "vars": {
-    "api": "name",
+    "AUTH_SECRET": "Fg/niV5ZRRturknJHLISW1SiUl1MtVeY1vmFGHMdAmg=", //# Added by `npx auth`. Read more: https: //cli.authjs.dev
     "RESEND_API_KEY": "re_Sx1ZeQ8a_LcNAVqPkFBe1CULxZ75YtrYk"
   },
   "kv_namespaces": [
