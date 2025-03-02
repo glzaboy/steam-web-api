@@ -18,5 +18,5 @@ export async function GET() {
   //getCloudflareContext().env.api;
   const myKv = await getCloudflareContext({ async: true });
   console.log(myKv);
-  return new Response(responseText + myKv.env.api)
+  return new Response(responseText)
 }
