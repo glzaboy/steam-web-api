@@ -48,13 +48,6 @@ export async function sendMail(data: EmailData) {
             }
         }
     } catch (error) {
-        // 类型安全地处理错误信息
-        let errorMessage = "未知错误";
-        if (error instanceof Error) {
-            errorMessage = error.message;
-        } else if (typeof error === "string") {
-            errorMessage = error;
-        }
-        throw new Error(`发送邮件失败: ${errorMessage}`);
+        throw error;
     }
 }

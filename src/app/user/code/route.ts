@@ -9,5 +9,5 @@ export async function GET() {
         from: "369775479@qq.com",
     });
     console.log(a);
-    return new Response("ok" + a);
+    return new Response("ok");
 }
