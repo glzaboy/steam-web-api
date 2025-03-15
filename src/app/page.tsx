@@ -1,19 +1,17 @@
-import Image from "next/image";
+
 import { signIn } from "@/auth"
+import { Button } from "antd"
+//import { signIn } from "next-auth/react"
 
 export default function Home() {
-  return (
-    <>
-      <form
-        action={async (formData) => {
-          "use server"
-          await signIn("resend", formData)
-        }}
-      >
-        <input type="text" name="email" placeholder="Email" />
-        <button type="submit">Signin with Resend</button>
-      </form>
 
-    </>
-  );
+
+  return <form action={async () => {
+    "use server"
+    await signIn()
+  }}
+  >
+    <Button type="primary">Sign in</Button>
+  </form>
+
 }
