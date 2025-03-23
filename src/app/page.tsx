@@ -1,17 +1,15 @@
-
-import { signIn } from "@/auth"
+"use client"
+import { auth } from "@/auth"
+//import { signIn } from "@/auth"
 import { Button } from "antd"
-//import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react"
 
 export default function Home() {
-
-
-  return <form action={async () => {
-    "use server"
-    await signIn()
-  }}
-  >
-    <Button type="primary">Sign in</Button>
-  </form>
+  return <Button onClick={() => signIn()}>Sign In</Button>
+  return <>
+    <button onClick={() => {
+      signIn();
+    }}>Sign in</button >
+  </>
 
 }
