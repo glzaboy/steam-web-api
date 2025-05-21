@@ -3,7 +3,7 @@ export async function GET() {
     const responseText = {
         "code": 0,
         "data": {
-            "nickname": "free@163.com(免费用户)",
+            "nickname": "free@hotmail.com(免费用户)",
             "avatar": "",
             "mobile": "",
             "sex": 0,
@@ -133,6 +133,19 @@ export async function GET() {
                     "bizCode": "1",
                     "productName": "3",
                     "expTime": 1749830400000
+                },
+                {
+                    "createTime": 1725461269000,
+                    "updateTime": 1726190183000,
+                    "creator": "1",
+                    "updater": "1",
+                    "deleted": false,
+                    "id": 10,
+                    "userId": 1,
+                    "bizId": "1",
+                    "bizCode": "1",
+                    "productName": "3",
+                    "expTime": 1749830400000
                 }
             ],
             "allProducts": [
@@ -187,6 +200,13 @@ export async function GET() {
                 {
                     "label": "Eco自动购买",
                     "value": "9",
+                    "dictType": "product_name_type",
+                    "status": 0
+                }
+                ,
+                {
+                    "label": "C5自动购买",
+                    "value": "10",
                     "dictType": "product_name_type",
                     "status": 0
                 }
