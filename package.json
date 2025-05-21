@@ -15,10 +15,9 @@
   "dependencies": {
     "@prisma/adapter-d1": "^6.8.2",
     "@prisma/client": "^6.8.2",
-    "antd": "^5.24.3",
-    "next": "14.2.23",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20250521.0",
@@ -33,12 +32,12 @@
     "wrangler": "^4.16.0"
   },
   "scripts": {
+    "dev": "next dev --turbopack",
     "build": "next build",
-    "dev": "next dev",
+    "start": "next start",
     "lint": "next lint",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
   }
 }

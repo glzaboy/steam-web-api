@@ -17,6 +17,7 @@ export async function GET() {
   // return new Response(responseText + suffix)
   //getCloudflareContext().env.api;
   const db = getDb();
-  const user = await db.user.findFirst();
+
+
   return new Response(responseText)
 }
