@@ -13,16 +13,15 @@
     "preview_image_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/e42eec61-db86-49c8-7b29-c3ed4783e400/public"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.0.4",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20250521.0",
-    "@opennextjs/cloudflare": "1.0.4",
-    "@types/node": "22.9.1",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
+    "@types/node": "^20.17.50",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "8.56.0",
     "eslint-config-next": "14.2.5",
     "prisma": "^6.8.2",
