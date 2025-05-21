@@ -13,8 +13,6 @@
     "preview_image_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/e42eec61-db86-49c8-7b29-c3ed4783e400/public"
   },
   "dependencies": {
-    "@prisma/adapter-d1": "^6.8.2",
-    "@prisma/client": "^6.8.2",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
