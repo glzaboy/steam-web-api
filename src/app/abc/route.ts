@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-
+import { getDb } from "../lib/db";
 
 export async function GET() {
   const responseText = 'Hello World'
@@ -16,7 +16,7 @@ export async function GET() {
   // const suffix = await myKv.get('suffix')
   // return new Response(responseText + suffix)
   //getCloudflareContext().env.api;
-  const myKv = await getCloudflareContext({ async: true });
-  console.log(myKv);
+  const db = getDb();
+  const user = await db.user.findFirst();
   return new Response(responseText)
 }
