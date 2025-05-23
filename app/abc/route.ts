@@ -15,10 +15,9 @@ export async function GET() {
   // const suffix = await myKv.get('suffix')
   // return new Response(responseText + suffix)
   //getCloudflareContext().env.api;
-  //const db = getDb();
   const db = getDb();
 
-  const allProduct = await db.select().from(schema.usersTable);
-  const result = JSON.stringify(allProduct)
-  return new Response(result);
+  const allProduct = await db.select().from(schema.allProduct);
+  //const result = JSON.stringify(allProduct)
+  return Response.json({ code: 200, data: { allProducts: allProduct } });
 }
