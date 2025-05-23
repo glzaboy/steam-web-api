@@ -1,8 +1,8 @@
 //import { getCloudflareContext } from "@opennextjs/cloudflare";
 
+import { getDb } from "../lib/db"
+import * as schema from "@/db/schema";
 export async function GET() {
-  const responseText = 'Hello World'
-
   // In the edge runtime you can use Bindings that are available in your application
   // (for more details see:
   //    - https://developers.cloudflare.com/pages/framework-guides/deploy-a-nextjs-site/#use-bindings-in-your-nextjs-application
@@ -16,7 +16,9 @@ export async function GET() {
   // return new Response(responseText + suffix)
   //getCloudflareContext().env.api;
   //const db = getDb();
+  const db = getDb();
 
-
-  return new Response(responseText)
+  const allProduct = await db.select().from(schema.usersTable);
+  const result = JSON.stringify(allProduct)
+  return new Response(result);
 }

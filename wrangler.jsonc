@@ -30,7 +30,8 @@
     {
       "binding": "DB",
       "database_name": "steamsda-api",
-      "database_id": "234e2906-f23d-4ab9-8fae-184ebbe6e742"
+      "database_id": "234e2906-f23d-4ab9-8fae-184ebbe6e742",
+      "migrations_dir": "./migrations"
     }
   ]
   /**
