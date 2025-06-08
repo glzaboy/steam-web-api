@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 import { getUserInfoByAccessToken } from "@/app/lib/user";
 import { getDb } from "@/app/lib/db";
 import * as schema from "@/db/schema";
+import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
     try {
@@ -19,8 +20,9 @@ export async function GET(request: NextRequest) {
         const db = getDb();
 
         const allProducts = await db.select().from(schema.allProduct)
+        const products = await db.select().from(schema.product).where(eq(schema.product.userId, me?.id ?? ""))
 
-        return Response.json({ code: 0, data: { me, allProducts }, message: "success" });
+        return Response.json({ code: 0, data: { me, allProducts, products }, message: "success" });
     } catch (error) {
         console.error('Error in GET request:', error)
         return NextResponse.json(

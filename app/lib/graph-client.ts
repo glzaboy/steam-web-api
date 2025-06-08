@@ -4,6 +4,7 @@
 export interface Me {
     displayName: string;
     givenName: string;
+    id: string;
 }
 
 // 定义错误类型
