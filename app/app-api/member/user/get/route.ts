@@ -150,50 +150,8 @@ export async function GET() {
             ],
             "allProducts": [
                 {
-                    "label": "订单中心",
-                    "value": "1",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "求购",
-                    "value": "2",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "UU自动上架",
-                    "value": "3",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "C5Game自动上架",
-                    "value": "4",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "UU自动发货",
-                    "value": "5",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "饰品保险箱",
-                    "value": "6",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
                     "label": "开箱辅助",
                     "value": "7",
-                    "dictType": "product_name_type",
-                    "status": 0
-                },
-                {
-                    "label": "悠悠有品自动压价",
-                    "value": "8",
                     "dictType": "product_name_type",
                     "status": 0
                 },

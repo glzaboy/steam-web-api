@@ -14,7 +14,7 @@ export const product = sqliteTable("Product", {
   id: integer().primaryKey({ autoIncrement: true }).notNull(),
   userId: text().notNull(),
   productName: text().notNull(),
-  expTime: numeric().notNull()
+  expTime: integer().notNull()
 },
   (table) => [
     index("Product_productName_key").on(table.userId),

@@ -13,29 +13,34 @@ import {
 } from 'lucide-react';
 import { useState } from 'react'
 import { Button } from "@/components/ui/button";
-import { Switch } from '@/components/ui/switch';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useTheme } from "next-themes"
 
 export default function Header() {
+    const { setTheme } = useTheme()
     const navigation = [
         { name: '仪表盘', href: '#', icon: LayoutDashboard, current: true },
         { name: '产品', href: '#', icon: ShoppingCart, current: false },
         { name: '客户', href: '#', icon: Users, current: false },
         { name: '设置', href: '#', icon: Settings, current: false },
     ];
-
-    const [darkMode, setDarkMode] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
 
-        <header className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
+        <header className={`sticky top-0 z-50 shadow-md`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <div className="flex-shrink-0 flex items-center">
-                            <div className={`h-8 w-8 rounded-md ${darkMode ? 'bg-blue-600' : 'bg-blue-500'}`} >
+                            <div className={`h-8 w-8 rounded-md`} >
                                 <Image src="/logo.png" alt="logo" width={100} height={100} />
                             </div>
-                            <span className={`ml-2 text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <span className={`ml-2 text-xl font-bold`}>
                                 Steam Sda
                             </span>
                         </div>
@@ -44,10 +49,7 @@ export default function Header() {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${item.current
-                                        ? `${darkMode ? 'border-blue-500 text-blue-500' : 'border-blue-600 text-blue-600'}`
-                                        : `${darkMode ? 'border-transparent text-gray-300 hover:text-white hover:border-gray-300' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`
-                                        }`}
+                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium `}
                                 >
                                     <item.icon className="mr-2 h-4 w-4" />
                                     {item.name}
@@ -58,13 +60,26 @@ export default function Header() {
 
                     <div className="flex items-center">
                         <div className="flex items-center mr-4">
-                            <Sun className={`h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                            <Switch
-                                checked={darkMode}
-                                onCheckedChange={setDarkMode}
-                                className="mx-2"
-                            />
-                            <Moon className={`h-5 w-5 ${darkMode ? 'text-gray-300' : 'text-gray-400'}`} />
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant={'ghost'} size="icon">
+                                        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                                        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                                        <span className="sr-only">Toggle theme</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setTheme("light")}>
+                                        明亮
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("dark")}>
+                                        暗黑
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("system")}>
+                                        系统
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
 
                         <Button variant="outline" className="mr-4 hidden md:block">
@@ -99,10 +114,7 @@ export default function Header() {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${item.current
-                                    ? `${darkMode ? 'bg-blue-900 border-blue-500 text-white' : 'bg-blue-50 border-blue-500 text-blue-700'}`
-                                    : `${darkMode ? 'border-transparent text-gray-300 hover:bg-gray-700 hover:border-gray-300' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`
-                                    }`}
+                                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
                             >
                                 <div className="flex items-center">
                                     <item.icon className="mr-3 h-5 w-5" />
