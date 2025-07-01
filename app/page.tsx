@@ -22,7 +22,7 @@ import {
 import {
   Users
 } from 'lucide-react';
-
+import { ProductList } from '@/app/components/Product';
 
 
 
@@ -117,8 +117,9 @@ export default function Home() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <ProductList></ProductList>
                     <div className="space-y-4">
-                      {[1, 2, 3, 4, 5, 5, 6].map((item) => (
+                      {[1, 2, 3, 4, 5, 6].map((item) => (
                         <div key={item} className="flex items-start">
                           <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center`}>
                             <Users className="h-5 w-5" />
