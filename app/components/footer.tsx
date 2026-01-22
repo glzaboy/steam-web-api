@@ -59,7 +59,7 @@ export default function Footer() {
 
                 <div className={`mt-8 pt-8 border-t flex flex-col md:flex-row justify-between items-center`}>
                     <p className={`text-sm`}>
-                        &copy; {new Date().getFullYear()} BrandName. 保留所有权利。
+                        &copy; {new Date().getFullYear()} SteamSda Co Ltd. &copy;保留所有权利
                     </p>
                     <div className="flex space-x-6 mt-4 md:mt-0">
                         {['条款', '隐私', 'Cookie 政策'].map((item) => (
