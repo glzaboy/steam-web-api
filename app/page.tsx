@@ -23,6 +23,7 @@ import {
   Users
 } from 'lucide-react';
 import { ProductList } from '@/app/components/Product';
+import Link from "next/link";
 
 
 
@@ -51,7 +52,7 @@ export default function Home() {
   ];
   return <>
     {/* 主体内容 */}
-    <main className="flex-grow">
+    <main className="grow">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className={`rounded-lg p-6 shadow`}>
@@ -63,6 +64,7 @@ export default function Home() {
                 <p className={`mt-2`}>
                   部分功能免费中，请期待
                 </p>
+                <p><Link href="https://game.steamsda.com" target="_blank">来个小游戏轻松一下</Link></p>
               </div>
               <div className="mt-4 md:mt-0">
                 <AlertDialog>
@@ -121,7 +123,7 @@ export default function Home() {
                     <div className="space-y-4">
                       {[1, 2, 3, 4, 5, 6].map((item) => (
                         <div key={item} className="flex items-start">
-                          <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center`}>
+                          <div className={`shrink-0 h-10 w-10 rounded-full flex items-center justify-center`}>
                             <Users className="h-5 w-5" />
                           </div>
                           <div className="ml-4">

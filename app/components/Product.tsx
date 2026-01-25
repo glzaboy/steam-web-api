@@ -197,8 +197,8 @@ function ProductCard({
                 </div>
             </CardHeader>
 
-            <CardContent className="flex-grow flex flex-col">
-                <div className="flex-grow">
+            <CardContent className="grow flex flex-col">
+                <div className="grow">
                     {/* 这里可以添加产品描述或其他信息 */}
                     {product.isActive && product.expTime && (
                         <div className="mt-4 pt-4 border-t border-gray-200">

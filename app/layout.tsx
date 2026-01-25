@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Footer from "./components/footer";
-import Header from "./components/header";
 import Script from 'next/script'; // 1. 导入Script组件
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import Footer from "@/components/site/footer";
+import Header from "@/components/site/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
