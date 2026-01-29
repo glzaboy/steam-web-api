@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import {
     LayoutDashboard,
-    ShoppingCart,
     Users,
     Settings,
     Sun,
     Moon,
     Menu,
-    X
+    X,
+    Birdhouse
 } from 'lucide-react';
 import { useState } from 'react'
 import { Button } from "@/components/ui/button";
@@ -19,15 +19,21 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    NavigationMenu,
+    //   NavigationMenuIndicator,
+    NavigationMenuItem,
+    NavigationMenuList,
+} from "@/components/ui/navigation-menu"
 import { useTheme } from "next-themes"
 
 export default function Header() {
     const { setTheme } = useTheme()
     const navigation = [
         { name: '仪表盘', href: '#', icon: LayoutDashboard, current: true },
-        { name: '产品', href: '#', icon: ShoppingCart, current: false },
-        { name: '客户', href: '#', icon: Users, current: false },
-        { name: '设置', href: '#', icon: Settings, current: false },
+        { name: '游戏', href: 'https://game.steamsda.com', icon: Birdhouse, current: false, target: "_blank" },
+        { name: '客户', href: '#', icon: Users, current: false, target: undefined },
+        { name: '设置', href: '#', icon: Settings, current: false, target: undefined },
     ];
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
@@ -45,16 +51,25 @@ export default function Header() {
                             </span>
                         </div>
                         <nav className="hidden md:ml-10 md:flex md:space-x-8">
-                            {navigation.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium `}
-                                >
-                                    <item.icon className="mr-2 h-4 w-4" />
-                                    {item.name}
-                                </Link>
-                            ))}
+                            <NavigationMenu>
+                                <NavigationMenuList className="flex-wrap">
+                                    {navigation.map((item) => (
+                                        <NavigationMenuItem key={item.name}>
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className={`block pl-3 pr-4 py-2 text-base font-medium hover:text-2xl`}
+                                                target={item.target}
+                                            >
+                                                <div className="flex items-center">
+                                                    <item.icon className="mr-3 h-5 w-5" />
+                                                    {item.name}
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuItem>
+                                    ))}
+                                </NavigationMenuList>
+                            </NavigationMenu>
                         </nav>
                     </div>
 
