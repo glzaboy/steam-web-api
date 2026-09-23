@@ -11,46 +11,46 @@ export const revalidate = 3600; // 缓存 1 小时
 
 const ITEMS_PER_PAGE = 8;
 
-export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
-  const { name: slug } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const db = await getDbAsync();
-  const platform = await db.query.platforms.findFirst({
-    where: (platforms, { eq }) => eq(platforms.slug, slug),
+  const category = await db.query.categories.findFirst({
+    where: (categories, { eq }) => eq(categories.slug, slug),
   });
-  const title = platform ? `${platform.name} - 游戏平台` : "游戏平台";
+  const title = category ? `${category.name} - 游戏分类` : "游戏分类";
   return {
     title,
-    description: platform ? `浏览 ${platform.name} 平台下的全部游戏` : "游戏平台列表",
+    description: category ? `浏览 ${category.name} 分类下的全部游戏` : "游戏分类列表",
   };
 }
 
-export default async function PlatformDetail({
+export default async function CategoryDetail({
   params,
   searchParams,
 }: {
-  params: Promise<{ name: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: number }>;
 }) {
-  const { name: slug } = await params;
+  const { slug } = await params;
   const q = await searchParams;
   const page = q.page ?? 1;
 
   const db = await getDbAsync();
-  const platform = await db.query.platforms.findFirst({
-    where: (platforms, { eq }) => eq(platforms.slug, slug),
+  const category = await db.query.categories.findFirst({
+    where: (categories, { eq }) => eq(categories.slug, slug),
   });
-  if (!platform) {
+  if (!category) {
     notFound();
   }
-  const [platformGames, totalResult] = await Promise.all([
+  const [categoryGames, totalResult] = await Promise.all([
     db.query.games.findMany({
-      where: (games, { eq }) => eq(games.platformId, platform.id),
+      where: (games, { eq }) => eq(games.categoryId, category.id),
       offset: (page - 1) * ITEMS_PER_PAGE,
       limit: ITEMS_PER_PAGE,
       orderBy: (games, { desc }) => [desc(games.sort)],
       with: { category: true },
     }),
-    db.select({ count: count() }).from(games).where(eq(games.platformId, platform.id)),
+    db.select({ count: count() }).from(games).where(eq(games.categoryId, category.id)),
   ]);
   const totalGames = totalResult[0]?.count || 0;
   const totalPages = Math.ceil(totalGames / ITEMS_PER_PAGE);
@@ -61,16 +61,16 @@ export default async function PlatformDetail({
         <div className="px-4 py-6 sm:px-0">
           <div className="flex items-center gap-2 mb-6">
             <Flame className="h-6 w-6 text-red-500" />
-            <h2 className="text-2xl font-bold">{platform.name}</h2>
+            <h2 className="text-2xl font-bold">{category.name}</h2>
           </div>
-          {platformGames.length > 0 ? (
+          {categoryGames.length > 0 ? (
             <>
-              <GameList games={platformGames} />
+              <GameList games={categoryGames} />
               <div className="mt-12">
                 <ServerPagination
                   currentPage={page}
                   totalPages={totalPages}
-                  baseUrl={`/platforms/${slug}`}
+                  baseUrl={`/categories/${category.slug}`}
                   pageParam="page"
                   showInfo={true}
                 />
@@ -78,7 +78,7 @@ export default async function PlatformDetail({
             </>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500">该平台下暂无游戏</p>
+              <p className="text-gray-500">该分类下暂无游戏</p>
             </div>
           )}
         </div>

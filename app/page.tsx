@@ -20,15 +20,14 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import {
-  Users, Gamepad2, Flame
+  Gamepad2, Flame, Grid3X3
 } from 'lucide-react';
 import { ProductList } from '@/app/components/Product';
-import Link from "next/link";
 
 import { getDbAsync } from "@/app/lib/db";
 import GameList from "@/components/game/GameList";
-import { games } from "@/db/schema";
-import { count } from "drizzle-orm";
+import { games, categories } from "@/db/schema";
+import { count, eq, asc } from "drizzle-orm";
 import ServerPagination from "@/components/game/ServerPagination";
 
 
@@ -62,7 +61,7 @@ export default async function Home({
   const page = q.page ?? 1;
 
   const db = await getDbAsync();
-  const [hotGames, allGames, totalGamesResult] = await Promise.all([
+  const [hotGames, allGames, totalGamesResult, topCategories] = await Promise.all([
     db.query.games.findMany({
       where: (games, { eq }) => eq(games.isHot, true),
       limit: 8,
@@ -76,6 +75,11 @@ export default async function Home({
       orderBy: (games, { desc }) => [desc(games.sort)],
     }),
     db.select({ count: count() }).from(games),
+    db.query.categories.findMany({
+      where: (categories, { eq }) => eq(categories.enable, true),
+      limit: 8,
+      orderBy: (categories, { asc }) => [asc(categories.sort)],
+    }),
   ]);
   const totalGamesCount = totalGamesResult[0]?.count || 0;
   const totalPages = Math.ceil(totalGamesCount / ITEMS_PER_PAGE);
@@ -91,6 +95,25 @@ export default async function Home({
     <main className="grow">
       {/* 游戏列表区块 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 游戏分类 */}
+        <div className="mt-8 mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <Grid3X3 className="h-6 w-6 text-red-500" />
+            <h2 className="text-2xl font-bold">游戏分类</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            {topCategories.map((category) => (
+              <a
+                key={category.id}
+                href={`/categories/${category.slug}`}
+                className="flex flex-col items-center p-4 rounded-md hover:bg-accent transition-colors"
+              >
+                <Gamepad2 className="h-8 w-8 mb-2" />
+                <span className="text-sm font-medium">{category.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
         <div className="flex items-center gap-2 mb-6">
           <Flame className="h-6 w-6 text-red-500" />
           <h2 className="text-2xl font-bold">热门游戏</h2>
@@ -130,7 +153,6 @@ export default async function Home({
                 <p className={`mt-2`}>
                   部分功能免费中，请期待
                 </p>
-                <p><Link href="https://game.steamsda.com" target="_blank">来个小游戏轻松一下</Link></p>
               </div>
               <div className="mt-4 md:mt-0">
                 <AlertDialog>
@@ -155,7 +177,7 @@ export default async function Home({
             {/* 统计数据卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {stats.map((stat, index) => (
-                <Card key={index} className={``}>
+                <Card key={index} className="rounded-lg border-0 shadow-none">
                   <CardHeader>
                     <CardTitle className={`text-sm font-medium`}>
                       {stat.name}
@@ -178,7 +200,7 @@ export default async function Home({
             {/* 主要内容区域 */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <Card className={``}>
+                <Card className="rounded-none border-0 shadow-none">
                   <CardHeader>
                     <CardTitle className={``}>
                       最新活动
@@ -186,32 +208,12 @@ export default async function Home({
                   </CardHeader>
                   <CardContent>
                     <ProductList></ProductList>
-                    <div className="space-y-4">
-                      {[1, 2, 3, 4, 5, 6].map((item) => (
-                        <div key={item} className="flex items-start">
-                          <div className={`shrink-0 h-10 w-10 flex items-center justify-center`}>
-                            <Users className="h-5 w-5" />
-                          </div>
-                          <div className="ml-4">
-                            <h4 className={`text-sm font-medium`}>
-                              新用户注册
-                            </h4>
-                            <p className={`text-sm`}>
-                              今天有 24 位新用户注册了我们的平台
-                            </p>
-                            <div className="mt-1 text-xs text-gray-400">
-                              2小时前
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
                   </CardContent>
                 </Card>
               </div>
 
               <div>
-                <Card className={``}>
+                <Card className="rounded-none border-0 shadow-none">
                   <CardHeader>
                     <CardTitle className={``}>
                       订阅更新
@@ -246,7 +248,7 @@ export default async function Home({
                   </CardContent>
                 </Card>
 
-                <Card className={`mt-6 `}>
+                <Card className="mt-6 rounded-lg border-0 shadow-none">
                   <CardHeader>
                     <CardTitle className={``}>
                       目标进度

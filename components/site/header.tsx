@@ -2,14 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-    LayoutDashboard,
-    Users,
-    Settings,
     Sun,
     Moon,
     Menu,
     X,
-    Birdhouse
+    Gamepad2,
+    Joystick
 } from 'lucide-react';
 import { useState } from 'react'
 import { Button } from "@/components/ui/button";
@@ -33,10 +31,8 @@ export default function Header() {
     const { setTheme } = useTheme()
     const { initialized, account, accessToken, me, meLoading, login, logout } = useAuth()
     const navigation = [
-        { name: '仪表盘', href: '#', icon: LayoutDashboard, current: true },
-        { name: '游戏', href: 'https://game.steamsda.com', icon: Birdhouse, current: false, target: "_blank" },
-        { name: '客户', href: '#', icon: Users, current: false, target: undefined },
-        { name: '设置', href: '#', icon: Settings, current: false, target: undefined },
+        { name: '分类', href: '/categories', icon: Gamepad2, current: false },
+        { name: '平台', href: '/platforms', icon: Joystick, current: false },
     ];
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
@@ -45,14 +41,14 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
-                        <div className="flex-shrink-0 flex items-center">
+                        <Link href="/" className="flex-shrink-0 flex items-center">
                             <div className={`h-8 w-8 rounded-md`} >
                                 <Image src="/logo.png" alt="logo" width={100} height={100} />
                             </div>
                             <span className={`ml-2 text-xl font-bold`}>
                                 Steam Sda
                             </span>
-                        </div>
+                        </Link>
                         <nav className="hidden md:ml-10 md:flex md:space-x-8">
                             <NavigationMenu>
                                 <NavigationMenuList className="flex-wrap">
@@ -62,7 +58,6 @@ export default function Header() {
                                                 key={item.name}
                                                 href={item.href}
                                                 className={`block pl-3 pr-4 py-2 text-base font-medium hover:text-2xl`}
-                                                target={item.target}
                                             >
                                                 <div className="flex items-center">
                                                     <item.icon className="mr-3 h-5 w-5" />
@@ -129,11 +124,11 @@ export default function Header() {
                         ) : (
                             <Button
                                 variant="outline"
-                                className="mr-4 hidden md:block"
+                                className="mr-4 hidden md:inline-flex items-center gap-2"
                                 disabled={!initialized}
                                 onClick={() => login()}
                             >
-                                <LogIn className="mr-2 h-4 w-4" />
+                                <LogIn className="h-4 w-4" />
                                 登录
                             </Button>
                         )}

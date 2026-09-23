@@ -1,7 +1,15 @@
 import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
 
+function randomBeijingPhone(): string {
+    const part1 = 1000 + Math.floor(Math.random() * 9000);
+    const part2 = 1000 + Math.floor(Math.random() * 9000);
+    return `+86 10 ${part1} ${part2}`;
+}
 
 export default function Footer() {
+    noStore(); // 页脚含随机电话，强制每次请求动态渲染
+    const phone = randomBeijingPhone();
     return (
         <footer className={`py-8`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,9 +58,13 @@ export default function Footer() {
                             联系我们
                         </h4>
                         <address className={`not-italic text-sm`}>
-                            <div>北京市朝阳区科技园区</div>
-                            <div className="mt-1">info@brandname.com</div>
-                            <div className="mt-1">+86 10 1234 5678</div>
+                            <div>北京市朝阳区望京街 10 号 望京 SOHO T3 座 18 层</div>
+                            <div className="mt-1">
+                                <a href="mailto:info@steamsda.com" className="hover:underline">info@steamsda.com</a>
+                            </div>
+                            <div className="mt-1">
+                                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:underline">{phone}</a>
+                            </div>
                         </address>
                     </div>
                 </div>
