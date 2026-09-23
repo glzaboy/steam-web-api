@@ -17,12 +17,6 @@ interface UserProduct {
     updateAt: string;
 }
 
-interface UserData {
-    me: me;
-    allProducts: AllProduct[];
-    products: UserProduct[];
-}
-
 interface CombinedProduct {
     id: number;
     label: string;
@@ -45,60 +39,52 @@ interface me {
     businessPhones: never[];
     ageGroup: string;
 }
-interface apiMe {
-    code: number;
-    data: UserData;
-    message: string;
-}
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/app/components/AuthProvider";
 
 export const ProductList = () => {
+    const { me } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState<CombinedProduct[]>([]);
+
+    // 直接消费 AuthProvider 已拉好的 me（浏览器登录 / 桌面端注入头都会更新它），
+    // 对 me 变化做响应：登录完成、me 由 null 变为数据时会自动重算产品列表。
     useEffect(() => {
-        // 模拟API请求
-        const fetchData = async () => {
-            try {
-                // 实际应用中这里应该是API调用
-                // const response = await fetch('/api/user-products');
-                // const data = await response.json();
+        if (!me) {
+            // 未登录：清空并结束加载，等待登录后 me 变化再次触发
+            setProducts([]);
+            setLoading(false);
+            return;
+        }
+        try {
+            const allProducts = (me.allProducts as AllProduct[]) ?? [];
+            const userProducts = (me.products as UserProduct[]) ?? [];
 
-                // 使用模拟数据
-                const response = await fetch('/api/me');
-                const data: apiMe = await response.json();
+            // 合并产品数据
+            const combined = allProducts.map(product => {
+                const userProduct = userProducts.find(
+                    p => p.productName === product.value
+                );
 
-                if (data.code === 0) {
+                return {
+                    id: product.id,
+                    label: product.label,
+                    value: product.value,
+                    isActive: !!userProduct,
+                    expTime: userProduct?.expTime
+                };
+            });
 
-
-                    // 合并产品数据
-                    const combined = data.data.allProducts.map(product => {
-                        const userProduct = data.data.products.find(
-                            p => p.productName === product.value
-                        );
-
-                        return {
-                            id: product.id,
-                            label: product.label,
-                            value: product.value,
-                            isActive: !!userProduct,
-                            expTime: userProduct?.expTime
-                        };
-                    });
-
-                    setProducts(combined);
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error("获取产品数据失败:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
+            setProducts(combined);
+        } catch (error) {
+            console.error("合并产品数据失败:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [me]);
     // 开通单个产品
     const activateProduct = (productValue: string) => {
         console.log(`开通产品: ${productValue}`);
@@ -132,13 +118,18 @@ export const ProductList = () => {
                 : p
         ));
     };
-    const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<CombinedProduct[]>([]);
 
     if (loading) {
         return (
             <div className="container mx-auto py-8 text-center">
                 <p>加载产品数据中...</p>
+            </div>
+        );
+    }
+    if (!me) {
+        return (
+            <div className="container mx-auto py-8 text-center text-gray-500">
+                <p>请先登录以查看您的产品功能。</p>
             </div>
         );
     }

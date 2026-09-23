@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { getUserInfoByAccessToken } from "@/app/lib/user";
 import { getDb } from "@/app/lib/db";
 import * as schema from "@/db/schema";
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
     try {
@@ -47,16 +47,19 @@ export async function GET(request: NextRequest) {
                 info: JSON.stringify(me),
             });
         }
-        const machine = request.headers.get("machine");
-        if (machine != null) {
-            const machineBindings = await db.select().from(schema.machineBinding).where(and(eq(schema.machineBinding.userId, me?.id ?? ""), eq(schema.machineBinding.isActive, true), eq(schema.machineBinding.machineId, machine)));
-            if (machineBindings.length <= 0) {
-                return NextResponse.json(
-                    { code: 401, message: '此机器码没有绑定，请绑定' },
-                    { status: 401 }
-                )
-            }
-        }
+        // [临时关闭] 机器码绑定校验：线上 machineBinding 尚无可绑定记录，而已发货桌面端必然会注入
+        // machine-code 请求头，导致每个请求都被拦成 401「此机器码没有绑定，请绑定」。
+        // 待后续补齐绑定流程后再启用此处逻辑。
+        // const machine = request.headers.get("machine") ?? request.headers.get("machine-code");
+        // if (machine != null) {
+        //     const machineBindings = await db.select().from(schema.machineBinding).where(and(eq(schema.machineBinding.userId, me?.id ?? ""), eq(schema.machineBinding.isActive, true), eq(schema.machineBinding.machineId, machine)));
+        //     if (machineBindings.length <= 0) {
+        //         return NextResponse.json(
+        //             { code: 401, message: '此机器码没有绑定，请绑定' },
+        //             { status: 401 }
+        //         )
+        //     }
+        // }
 
 
 

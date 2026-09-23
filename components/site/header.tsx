@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { useState } from 'react'
 import { Button } from "@/components/ui/button";
+import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { useAuth } from "@/app/components/AuthProvider";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,6 +31,7 @@ import { useTheme } from "next-themes"
 
 export default function Header() {
     const { setTheme } = useTheme()
+    const { initialized, account, accessToken, me, meLoading, login, logout } = useAuth()
     const navigation = [
         { name: '仪表盘', href: '#', icon: LayoutDashboard, current: true },
         { name: '游戏', href: 'https://game.steamsda.com', icon: Birdhouse, current: false, target: "_blank" },
@@ -97,13 +100,43 @@ export default function Header() {
                             </DropdownMenu>
                         </div>
 
-                        <Button variant="outline" className="mr-4 hidden md:block">
-                            登录
-                        </Button>
-
-                        <Button className="hidden md:block">
-                            注册
-                        </Button>
+                        {(me || account) ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="mr-4 hidden md:flex items-center gap-2">
+                                        <UserIcon className="h-4 w-4" />
+                                        {account?.name ?? account?.username ?? (me?.me as { displayName?: string } | undefined)?.displayName ?? '我的'}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <div className="px-2 py-1.5 text-sm">
+                                        <div className="font-medium">{account?.name ?? account?.username ?? (me?.me as { displayName?: string } | undefined)?.displayName ?? '我的'}</div>
+                                        <div className="text-xs text-muted-foreground truncate max-w-[16rem]">
+                                            {(me?.me as { mail?: string; userPrincipalName?: string } | undefined)?.mail
+                                                ?? (me?.me as { mail?: string; userPrincipalName?: string } | undefined)?.userPrincipalName
+                                                ?? '—'}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                            {meLoading ? '加载中…' : `已购订阅：${(me?.products as unknown[])?.length ?? 0} 项`}
+                                        </div>
+                                    </div>
+                                    <DropdownMenuItem onClick={() => logout()}>
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        登出
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                className="mr-4 hidden md:block"
+                                disabled={!initialized}
+                                onClick={() => login()}
+                            >
+                                <LogIn className="mr-2 h-4 w-4" />
+                                登录
+                            </Button>
+                        )}
 
                         {/* 移动端菜单按钮 */}
                         <button
@@ -138,12 +171,26 @@ export default function Header() {
                             </Link>
                         ))}
                         <div className="px-4 py-2">
-                            <Button variant="outline" className="w-full mb-2">
-                                登录
-                            </Button>
-                            <Button className="w-full">
-                                注册
-                            </Button>
+                            {(me || account) ? (
+                                <Button
+                                    variant="outline"
+                                    className="w-full mb-2"
+                                    onClick={() => logout()}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    登出（{account?.name ?? account?.username ?? (me?.me as { displayName?: string } | undefined)?.displayName ?? '我的'}）
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    className="w-full mb-2"
+                                    disabled={!initialized}
+                                    onClick={() => login()}
+                                >
+                                    <LogIn className="mr-2 h-4 w-4" />
+                                    登录
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>

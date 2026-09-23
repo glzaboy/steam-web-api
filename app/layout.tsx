@@ -5,6 +5,7 @@ import Script from 'next/script'; // 1. 导入Script组件
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import Footer from "@/components/site/footer";
 import Header from "@/components/site/header";
+import { AuthProvider } from "@/app/components/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,9 +27,11 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange>
-          <Header />
-          {children}
-          <Footer />
+          <AuthProvider>
+            <Header />
+            {children}
+            <Footer />
+          </AuthProvider>
         </NextThemesProvider>
         {/* 51LA 统计代码 */}
         <Script
