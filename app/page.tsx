@@ -20,10 +20,16 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import {
-  Users
+  Users, Gamepad2, Flame
 } from 'lucide-react';
 import { ProductList } from '@/app/components/Product';
 import Link from "next/link";
+
+import { getDbAsync } from "@/app/lib/db";
+import GameList from "@/components/game/GameList";
+import { games } from "@/db/schema";
+import { count } from "drizzle-orm";
+import ServerPagination from "@/components/game/ServerPagination";
 
 
 
@@ -43,7 +49,37 @@ export const metadata: Metadata = {
     { name: "glzaboy", url: "github.com/SteamSda" }
   ]
 };
-export default function Home() {
+export const revalidate = 3600; // 游戏列表缓存1小时
+
+const ITEMS_PER_PAGE = 12;
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: number }>
+}) {
+  const q = await searchParams;
+  const page = q.page ?? 1;
+
+  const db = await getDbAsync();
+  const [hotGames, allGames, totalGamesResult] = await Promise.all([
+    db.query.games.findMany({
+      where: (games, { eq }) => eq(games.isHot, true),
+      limit: 8,
+      with: { category: true },
+      orderBy: (games, { desc }) => [desc(games.sort)],
+    }),
+    db.query.games.findMany({
+      offset: (page - 1) * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE,
+      with: { category: true },
+      orderBy: (games, { desc }) => [desc(games.sort)],
+    }),
+    db.select({ count: count() }).from(games),
+  ]);
+  const totalGamesCount = totalGamesResult[0]?.count || 0;
+  const totalPages = Math.ceil(totalGamesCount / ITEMS_PER_PAGE);
+
   const stats = [
     { name: '总用户数', value: '12,345', change: '+12%' },
     { name: '订单量', value: '2,567', change: '+18%' },
@@ -53,9 +89,39 @@ export default function Home() {
   return <>
     {/* 主体内容 */}
     <main className="grow">
+      {/* 游戏列表区块 */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Flame className="h-6 w-6 text-red-500" />
+          <h2 className="text-2xl font-bold">热门游戏</h2>
+        </div>
+        <GameList games={hotGames} />
+
+        <div className="flex items-center gap-2 mb-6 mt-12">
+          <Gamepad2 className="h-6 w-6 text-red-500" />
+          <h2 className="text-2xl font-bold">所有游戏</h2>
+        </div>
+        <GameList games={allGames} />
+        {allGames.length > 0 ? (
+          <div className="mt-12">
+            <ServerPagination
+              currentPage={page}
+              totalPages={totalPages}
+              baseUrl="/"
+              pageParam="page"
+              showInfo={true}
+            />
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Gamepad2 className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-500 mb-2">暂无游戏</h3>
+          </div>
+        )}
+      </section>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className={`rounded-lg p-6 shadow`}>
+          <div className={`p-6`}>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
               <div>
                 <h1 className={`text-2xl font-bold`}>
@@ -123,7 +189,7 @@ export default function Home() {
                     <div className="space-y-4">
                       {[1, 2, 3, 4, 5, 6].map((item) => (
                         <div key={item} className="flex items-start">
-                          <div className={`shrink-0 h-10 w-10 rounded-full flex items-center justify-center`}>
+                          <div className={`shrink-0 h-10 w-10 flex items-center justify-center`}>
                             <Users className="h-5 w-5" />
                           </div>
                           <div className="ml-4">
