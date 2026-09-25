@@ -29,7 +29,7 @@ import { useTheme } from "next-themes"
 
 export default function Header() {
     const { setTheme } = useTheme()
-    const { initialized, account, accessToken, me, meLoading, login, logout } = useAuth()
+    const { initialized, account, accessToken, me, meLoading, authExpired, login, logout } = useAuth()
     const navigation = [
         { name: '分类', href: '/categories', icon: Gamepad2, current: false },
         { name: '平台', href: '/platforms', icon: Joystick, current: false },
@@ -112,9 +112,19 @@ export default function Header() {
                                                 ?? '—'}
                                         </div>
                                         <div className="text-xs text-muted-foreground mt-1">
-                                            {meLoading ? '加载中…' : `已购订阅：${(me?.products as unknown[])?.length ?? 0} 项`}
+                                            {meLoading
+                                                ? '加载中…'
+                                                : authExpired
+                                                    ? <span className="text-red-500">登录已过期，请重新登录</span>
+                                                    : `已购订阅：${(me?.products as unknown[])?.length ?? 0} 项`}
                                         </div>
                                     </div>
+                                    {authExpired && (
+                                        <DropdownMenuItem onClick={() => login()}>
+                                            <LogIn className="mr-2 h-4 w-4" />
+                                            重新登录
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={() => logout()}>
                                         <LogOut className="mr-2 h-4 w-4" />
                                         登出

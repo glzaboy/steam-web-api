@@ -31,6 +31,8 @@ interface AuthContextValue {
   meLoading: boolean
   /** 是否由桌面端/命令行通过请求头注入完成认证（此时网站侧没有 MSAL token） */
   viaDesktop: boolean
+  /** 浏览器有缓存账户但令牌已失效且无法静默续期（登录已过期，需重新登录） */
+  authExpired: boolean
   /** 跳转方式登录微软（整页跳转到微软授权页，回调地址需已在 Azure 注册） */
   login: () => Promise<void>
   /** 跳转方式登出 */
@@ -41,6 +43,9 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
+// 会话内“自动静默续登”只尝试一次的标记，避免续期失败时反复整页跳转。
+const REAUTH_TRIED_FLAG = 'msal.silentReauthTried'
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [initialized, setInitialized] = useState(false)
@@ -49,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<MeData | null>(null)
   const [meLoading, setMeLoading] = useState(false)
   const [viaDesktop, setViaDesktop] = useState(false)
+  const [authExpired, setAuthExpired] = useState(false)
 
   // 统一探测：
   // - 浏览器环境能静默拿到 MSAL token 就带上 Authorization 头；
@@ -57,11 +63,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const probe = useCallback(async (knownToken: string | null) => {
     setMeLoading(true)
     let token: string | null = knownToken
+    let browserAccount: AccountInfo | null = null
     if (!token && typeof window !== 'undefined') {
       try {
         const msal = getMsalInstance()
         await msal.initialize()
         const acc = msal.getActiveAccount() ?? msal.getAllAccounts()[0] ?? null
+        browserAccount = acc
         if (acc) {
           try {
             token = (await msal.acquireTokenSilent({ ...loginRequest, account: acc })).accessToken
@@ -82,6 +90,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    // 浏览器有缓存账户、但静默续期始终拿不到令牌 => 登录已过期。
+    // 静默续期依赖隐藏 iframe 访问 login.microsoftonline.com，会被浏览器三方 cookie 拦截而失败；
+    // 故改走「整页跳转」acquireTokenRedirect：顶层导航不受三方 cookie 限制，多数情况可无感恢复。
+    if (!token && browserAccount) {
+      const alreadyTried =
+        typeof window !== 'undefined' && window.sessionStorage.getItem(REAUTH_TRIED_FLAG) === '1'
+      if (!alreadyTried) {
+        // 本次会话只自动跳转一次，防止续期失败时反复整页跳转
+        window.sessionStorage.setItem(REAUTH_TRIED_FLAG, '1')
+        // 续期完成后跳回当前页面
+        window.sessionStorage.setItem(
+          'msal.postLoginRedirect',
+          window.location.pathname + window.location.search,
+        )
+        setMeLoading(false)
+        try {
+          const msal = await ensureMsalInitialized()
+          await msal.acquireTokenRedirect({ ...loginRequest, account: browserAccount })
+        } catch (e) {
+          console.error('自动续登跳转失败:', e)
+          setAuthExpired(true)
+        }
+        return
+      }
+      // 本会话已尝试过自动续登仍失败：标记为已过期，交由 UI 提示手动重新登录
+      setAuthExpired(true)
+    } else {
+      setAuthExpired(false)
+    }
+
     try {
       const res = await fetch(
         '/api/me',
@@ -93,11 +131,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setMe(json.data)
           // 没带浏览器 token 却成功，说明是桌面端 / 命令行在网络层注入的令牌
           setViaDesktop(!token)
+          // 认证成功：清除续登标记，便于下次过期时仍能自动恢复
+          if (typeof window !== 'undefined') {
+            window.sessionStorage.removeItem(REAUTH_TRIED_FLAG)
+          }
         } else {
           setMe(null)
         }
       } else {
         setMe(null)
+        // 本有凭据（浏览器令牌或缓存账户）却仍被判 401 => 视为登录已过期，提示重新登录。
+        // 匿名访客（无 token 也无账户）不置位，仍显示“请先登录”。
+        if (res.status === 401 && (token || browserAccount)) setAuthExpired(true)
       }
     } catch {
       // 浏览器环境无注入头 + 无 MSAL token，必然失败，忽略
@@ -219,7 +264,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ initialized, account, accessToken, me, meLoading, viaDesktop, login, logout, getToken }}
+      value={{ initialized, account, accessToken, me, meLoading, viaDesktop, authExpired, login, logout, getToken }}
     >
       {children}
     </AuthContext.Provider>

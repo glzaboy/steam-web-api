@@ -46,7 +46,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/app/components/AuthProvider";
 
 export const ProductList = () => {
-    const { me } = useAuth();
+    const { me, authExpired, login } = useAuth();
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState<CombinedProduct[]>([]);
 
@@ -123,6 +123,14 @@ export const ProductList = () => {
         return (
             <div className="container mx-auto py-8 text-center">
                 <p>加载产品数据中...</p>
+            </div>
+        );
+    }
+    if (!me && authExpired) {
+        return (
+            <div className="container mx-auto py-8 text-center">
+                <p className="mb-4 text-gray-500">登录状态已过期，请重新登录以查看您的产品。</p>
+                <Button onClick={() => login()}>重新登录</Button>
             </div>
         );
     }

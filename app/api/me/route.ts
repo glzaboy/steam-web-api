@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getUserInfoByAccessToken } from "@/app/lib/user";
+import type { Me } from "@/app/lib/graph-client";
 import { getDb } from "@/app/lib/db";
 import * as schema from "@/db/schema";
 import { eq } from 'drizzle-orm';
@@ -16,7 +17,26 @@ export async function GET(request: NextRequest) {
         }
         // 3. 提取纯净的 token
         const token = authHeader.split(' ')[1]
-        const me = await getUserInfoByAccessToken(token);
+        if (!token) {
+            return NextResponse.json(
+                { code: 401, message: 'Token 无效或已过期' },
+                { status: 401 }
+            )
+        }
+        // 校验令牌：令牌无效/过期时 getUserInfoByAccessToken 会抛错或返回 null。
+        // 这里统一按 401 返回（此前会冒泡成 500），让前端能明确区分“未登录/登录已过期”。
+        let me: Me | null = null
+        try {
+            me = await getUserInfoByAccessToken(token)
+        } catch {
+            me = null
+        }
+        if (!me) {
+            return NextResponse.json(
+                { code: 401, message: 'Token 无效或已过期' },
+                { status: 401 }
+            )
+        }
         const db = getDb();
 
         const userInfo = await db
