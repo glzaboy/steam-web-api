@@ -91,8 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     // 浏览器有缓存账户、但静默续期始终拿不到令牌 => 登录已过期。
-    // 静默续期依赖隐藏 iframe 访问 login.microsoftonline.com，会被浏览器三方 cookie 拦截而失败；
-    // 故改走「整页跳转」acquireTokenRedirect：顶层导航不受三方 cookie 限制，多数情况可无感恢复。
+    // MSAL 的 acquireTokenSilent 会先查缓存、再把过期的 access token 用「缓存里的 refresh token」续期
+    // （这一步是直连令牌端点、不走 iframe、不依赖三方 cookie）；
+    // 但【SPA 的 refresh token 固定 24 小时过期】(微软对重定向 URI 注册为 spa 的硬性策略，非滑动窗口)，
+    // 过期后 MSAL 会退化为用隐藏 iframe 借微软活动会话续期——这一步常被 Safari ITP / Chrome 追踪防护拦截。
+    // 拦截后只能走「整页跳转」acquireTokenRedirect：顶层导航不受三方 cookie 限制，且若微软会话仍在，
+    // 用户通常无需重新输密码、只是一次短暂重载（微软官方推荐的兜底做法）。
     if (!token && browserAccount) {
       const alreadyTried =
         typeof window !== 'undefined' && window.sessionStorage.getItem(REAUTH_TRIED_FLAG) === '1'
